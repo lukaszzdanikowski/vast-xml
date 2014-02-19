@@ -157,7 +157,7 @@ VAST.prototype.xml = function(options) {
     var adOptions = { id : ad.id };
     if (ad.sequence) adOptions.sequence = ad.sequence;
     var Ad = response.element('Ad', adOptions)
-      , adElementName = (ad.structure.toLowerCase() === 'wrapper') ? 'Wrapper' : 'InLine';
+      , adElementName = (ad.structure.toLowerCase() === 'wrapper') ? 'Wrapper' : 'InLine'
       , adElement = Ad.element(adElementName);
     adElement.element('AdSystem', ad.AdSystem.name, { version : ad.AdSystem.version });
     var creatives = adElement.element('Creatives');
