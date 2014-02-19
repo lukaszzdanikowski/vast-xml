@@ -93,12 +93,12 @@ VAST.prototype.addWrapperCompanionAdCreative = function(parent, data) {
     return companionAd;
 };
 
-VAST.prototype.addInLineCompanion = function(parent, data) {
+VAST.prototype.addAbstractCompanion = function(parent, data) {
   var attributes = data.attributes
     , companionAttr = {
         'width': data.width,
         'height': data.height
-    };
+  };
   if (typeof attributes.id !== 'undefined') companionAttr.id = attributes.id;
   if (typeof attributes.assetWidth !== 'undefined') companionAttr.assetWidth = attributes.assetWidth;
   if (typeof attributes.assetHeight !== 'undefined') companionAttr.assetHeight = attributes.assetHeight;
@@ -112,6 +112,15 @@ VAST.prototype.addInLineCompanion = function(parent, data) {
   if (typeof data.altText !== 'undefined') companion.element('AltText', data.altText);
   if (typeof data.companionClickThrough !== 'undefined') companion.element('CompanionClickThrough', data.companionClickThrough);
   return companion;
+};
+
+VAST.prototype.addInLineCompanion = function(parent, data) {
+  return this.addAbstractCompanion(parent, data);
+  // this should have companion click tracking
+};
+
+VAST.prototype.addWrapperCompanion = function(parent, data) {
+  return this.addAbstractCompanion(parent, data);
 };
 
 VAST.prototype.addResource = function(parent, data) {
