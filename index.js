@@ -213,7 +213,7 @@ VAST.prototype.xml = function(options) {
       var nonLinearAds = creatives.element('Creative').element('NonLinearAds')
         , creativeType = nonLinearAds.element(c.type, c.attributes);
       c.resources.forEach(function(resource) {
-        var attributes = {},
+        var attributes = {};
         if (resource.creativeType) attributes.creativeType = resource.creativeType;
         creativeType.element(resource.type, resource.uri, attributes);
       });
