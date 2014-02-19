@@ -223,7 +223,7 @@ VAST.prototype.xml = function(options) {
       if (c.adParameters) creativeType.element('AdParameters', c.adParameters.data, { xmlEncoded : c.adParameters.xmlEncoded });
     });
     
-  });
+  }.bind(this));
   return response.end(options);
 };
 
