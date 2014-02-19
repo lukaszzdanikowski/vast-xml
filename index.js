@@ -94,10 +94,10 @@ VAST.prototype.addWrapperCompanionAdCreative = function(parent, data) {
 };
 
 VAST.prototype.addAbstractCompanion = function(parent, data) {
-  var attributes = data.attributes
+  var attributes = (typeof data.attributes !== 'undefined') ? data.attributes : {}
     , companionAttr = {
-        'width': data.width,
-        'height': data.height
+        'width': (typeof data.width !== "undefined") ? data.width : 0 ,
+        'height': (typeof data.height !== "undefined") ? data.height : 0
   };
   if (typeof attributes.id !== 'undefined') companionAttr.id = attributes.id;
   if (typeof attributes.assetWidth !== 'undefined') companionAttr.assetWidth = attributes.assetWidth;
@@ -107,7 +107,8 @@ VAST.prototype.addAbstractCompanion = function(parent, data) {
   if (typeof attributes.apiFramework !== 'undefined') companionAttr.apiFramework = attributes.apiFramework;
   if (typeof attributes.adSlotId !== 'undefined') companionAttr.adSlotId = attributes.adSlotId;
   var companion = parent.element('Companion', companionAttr);
-  data.resources.forEach(this.addResource.bind(this, companion));
+  var resources = (typeof data.resources !== 'undefined') ? data.resources : [];
+  resources.forEach(this.addResource.bind(this, companion));
   if (typeof data.adParameters !== 'undefined') companion.element('AdParameters', data.adParameters.data, { xmlEncoded : r.adParameters.xmlEncoded });
   if (typeof data.altText !== 'undefined') companion.element('AltText', data.altText);
   if (typeof data.companionClickThrough !== 'undefined') companion.element('CompanionClickThrough', data.companionClickThrough);
@@ -160,27 +161,30 @@ VAST.prototype.xml = function(options) {
       , adElementName = (ad.structure.toLowerCase() === 'wrapper') ? 'Wrapper' : 'InLine'
       , adElement = Ad.element(adElementName);
     adElement.element('AdSystem', ad.AdSystem.name, { version : ad.AdSystem.version });
-    var creatives = adElement.element('Creatives');
+    
     var linearCreatives = ad.creatives.filter(function(c) { return c.type === 'Linear' });
     var nonLinearCreatives = ad.creatives.filter(function(c) { return c.type === 'NonLinear' });
     var companionAdCreatives = ad.creatives.filter(function(c) { return c.type === 'CompanionAd' });
     
-    companionAdCreatives.forEach(this['add' + adElementName + 'CompanionAdCreative'].bind(this, creatives));
-    
     if (adElementName === 'Wrapper') {
       adElement.element('VASTAdTagURI', ad.VASTAdTagURI);
       ad.impressions.forEach(this.addWrapperImpression.bind(this, adElement, track));
+      var creatives = adElement.element('Creatives');
+      companionAdCreatives.forEach(this.addWrapperCompanionAdCreative.bind(this, creatives));
       return;
-    } else {
-      adElement.element('AdTitle', ad.AdTitle);
-      adElement.element('Description', ad.Description);
-      ad.impressions.forEach(this.addInLineImpression.bind(this, adElement, track));
-      ad.surveys.forEach(function(survey) {
-        var attributes = {};
-        if (survey.type) attributes.type = survey.type;
-        adElement.element('Survey', survey.url, attributes);
-      });
     }
+    
+    adElement.element('AdTitle', ad.AdTitle);
+    adElement.element('Description', ad.Description);
+    ad.surveys.forEach(function(survey) {
+      var attributes = {};
+      if (survey.type) attributes.type = survey.type;
+      adElement.element('Survey', survey.url, attributes);
+    });
+    ad.impressions.forEach(this.addInLineImpression.bind(this, adElement, track));
+    var creatives = adElement.element('Creatives');
+    
+    companionAdCreatives.forEach(this.addInLineCompanionAdCreative.bind(this, creatives));
     
     linearCreatives.forEach(function(c) {
       var creative = creatives.element('Creative', c.attributes)
