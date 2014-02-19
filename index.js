@@ -19,7 +19,7 @@ var TrackingEventNMTOKENS = {
   'firstQuartile': true,
   'midpoint': true,
   'thirdQuartile': true,
-  'complete': true
+  'complete': true,
   'mute': true,
   'unmute': true,
   'pause': true,
