@@ -78,7 +78,7 @@ VAST.prototype.addAbstractCreative = function(parent, data) {
 };
 
 VAST.prototype.addInLineCompanionAdCreative = function(parent, data) {
-    var creative = this.addAbstractCreative(parent, data);
+    var creative = this.addAbstractCreative(parent, data)
       , companionAdAttr = {};
     if (typeof data.required !== 'undefined' && data.required in CompanionAdsRequiredNMTOKENS) companionAdAttr.required = data.required;
     var companionAd = creative.element('CompanionAds', companionAdAttr);
@@ -87,8 +87,8 @@ VAST.prototype.addInLineCompanionAdCreative = function(parent, data) {
 };
 
 VAST.prototype.addWrapperCompanionAdCreative = function(parent, data) {
-    var creative = this.addAbstractCreative(parent, data);
-    var companionAd = creative.element('CompanionAds');
+    var creative = this.addAbstractCreative(parent, data)
+      , companionAd = creative.element('CompanionAds');
     data.resources.forEach(this.addWrapperCompanion.bind(this, companionAd));
     return companionAd;
 };
