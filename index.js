@@ -82,46 +82,46 @@ VAST.prototype.addInLineCompanionAdCreative = function(parent, data) {
       , companionAdAttr = {};
     if (typeof data.required !== 'undefined' && data.required in CompanionAdsRequiredNMTOKENS) companionAdAttr.required = data.required;
     var companionAd = creative.element('CompanionAds', companionAdAttr);
-    data.resources.forEach(this.addInLineCompanion.bind(this, companionAd));
+    data.resources.forEach(this.addInLineCompanion.bind(this, companionAd, data));
     return companionAd;
 };
 
 VAST.prototype.addWrapperCompanionAdCreative = function(parent, data) {
     var creative = this.addAbstractCreative(parent, data)
       , companionAd = creative.element('CompanionAds');
-    data.resources.forEach(this.addWrapperCompanion.bind(this, companionAd));
+    data.resources.forEach(this.addWrapperCompanion.bind(this, companionAd, data));
     return companionAd;
 };
 
-VAST.prototype.addAbstractCompanion = function(parent, data) {
+VAST.prototype.addAbstractCompanion = function(parent, parentData, data) {
   var attributes = (typeof data.attributes !== 'undefined') ? data.attributes : {}
     , companionAttr = {
-        'width': (typeof data.width !== "undefined") ? data.width : 0 ,
-        'height': (typeof data.height !== "undefined") ? data.height : 0
+        'width': parentData.attributes.width,
+        'height': parentData.attributes.height
   };
-  if (typeof attributes.id !== 'undefined') companionAttr.id = attributes.id;
-  if (typeof attributes.assetWidth !== 'undefined') companionAttr.assetWidth = attributes.assetWidth;
-  if (typeof attributes.assetHeight !== 'undefined') companionAttr.assetHeight = attributes.assetHeight;
-  if (typeof attributes.expandedWidth !== 'undefined') companionAttr.expandedWidth = attributes.expandedWidth;
-  if (typeof attributes.expandedHeight !== 'undefined') companionAttr.expandedHeight = attributes.expandedHeight;
-  if (typeof attributes.apiFramework !== 'undefined') companionAttr.apiFramework = attributes.apiFramework;
-  if (typeof attributes.adSlotId !== 'undefined') companionAttr.adSlotId = attributes.adSlotId;
+  if (typeof parentData.id !== 'undefined') companionAttr.id = parentData.id;
+  if (typeof parentData.assetWidth !== 'undefined') companionAttr.assetWidth = parentData.assetWidth;
+  if (typeof parentData.assetHeight !== 'undefined') companionAttr.assetHeight = parentData.assetHeight;
+  if (typeof parentData.expandedWidth !== 'undefined') companionAttr.expandedWidth = parentData.expandedWidth;
+  if (typeof parentData.expandedHeight !== 'undefined') companionAttr.expandedHeight = parentData.expandedHeight;
+  if (typeof parentData.apiFramework !== 'undefined') companionAttr.apiFramework = parentData.apiFramework;
+  if (typeof parentData.adSlotId !== 'undefined') companionAttr.adSlotId = parentData.adSlotId;
   var companion = parent.element('Companion', companionAttr);
-  var resources = (typeof data.resources !== 'undefined') ? data.resources : [];
-  resources.forEach(this.addResource.bind(this, companion));
+
+  this.addResource(companion, data);
   if (typeof data.adParameters !== 'undefined') companion.element('AdParameters', data.adParameters.data, { xmlEncoded : r.adParameters.xmlEncoded });
   if (typeof data.altText !== 'undefined') companion.element('AltText', data.altText);
   if (typeof data.companionClickThrough !== 'undefined') companion.element('CompanionClickThrough', data.companionClickThrough);
   return companion;
 };
 
-VAST.prototype.addInLineCompanion = function(parent, data) {
-  return this.addAbstractCompanion(parent, data);
+VAST.prototype.addInLineCompanion = function(parent, parentData, data) {
+  return this.addAbstractCompanion(parent, parentData, data);
   // this should have companion click tracking
 };
 
-VAST.prototype.addWrapperCompanion = function(parent, data) {
-  return this.addAbstractCompanion(parent, data);
+VAST.prototype.addWrapperCompanion = function(parent, parentData, data) {
+  return this.addAbstractCompanion(parent, parentData, data);
 };
 
 VAST.prototype.addResource = function(parent, data) {
@@ -144,7 +144,7 @@ VAST.prototype.addIFrameResource = function(parent, data) {
 VAST.prototype.addHTMLResource = function(parent, data) {
   var attr = {};
   if (typeof data.xmlEncoded !== 'undefined') attr.xmlEncoded = data.xmlEncoded;
-  return parent.element('HTMLResource', data.data, attr);
+  return parent.element('HTMLResource', data.html, attr);
 };
 
 VAST.prototype.xml = function(options) {
@@ -215,7 +215,8 @@ VAST.prototype.xml = function(options) {
 
     nonLinearCreatives.forEach(function(c){
       var nonLinearAds = creatives.element('Creative').element('NonLinearAds')
-        , creativeType = nonLinearAds.element(c.type, c.attributes);
+        , attributes = c.attributes;
+      var creativeType = nonLinearAds.element(c.type, attributes);
       c.resources.forEach(function(resource) {
         var attributes = {};
         if (resource.creativeType) attributes.creativeType = resource.creativeType;
