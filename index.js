@@ -194,22 +194,22 @@ VAST.prototype.xml = function(options) {
       c.icons.forEach(function(i){
         var icon = icons.element('Icon', i.attributes);
         i.resources.forEach(function(r){
-          icon.element(r.type, r.uri, (r.creativeType) ? { creativeType : r.creativeType } : {});
+          icon.element(r.type, (r.creativeType) ? { creativeType : r.creativeType } : {}).cdata(r.uri);
         });
       });
       creativeType.element('Duration', c.Duration);
       var trackingEvents = creativeType.element('TrackingEvents');
       c.trackingEvents.forEach(function(trackingEvent){
-        if (track) trackingEvents.element('Tracking', trackingEvent.url, { event : trackingEvent.event });
+        if (track) trackingEvents.element('Tracking', { event : trackingEvent.event }).cdata(trackingEvent.url);
       });
       if (c.AdParameters) creativeType.element('AdParameters').cdata(c.AdParameters);
       var videoClicks = creativeType.element('VideoClicks');
       c.videoClicks.forEach(function(videoClick){
-        videoClicks.element(videoClick.type, videoClick.url, { id : videoClick.id });
+        videoClicks.element(videoClick.type, { id : videoClick.id }).cdata(videoClick.url);
       });
       var mediaFiles = creativeType.element('MediaFiles');
       c.mediaFiles.forEach(function(mediaFile) {
-        mediaFiles.element('MediaFile', mediaFile.url, mediaFile.attributes);
+        mediaFiles.element('MediaFile', mediaFile.attributes).cdata(mediaFile.url);
       });
     });
 
