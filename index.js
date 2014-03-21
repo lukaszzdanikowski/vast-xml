@@ -179,8 +179,11 @@ VAST.prototype.xml = function(options) {
     ad.surveys.forEach(function(survey) {
       var attributes = {};
       if (survey.type) attributes.type = survey.type;
-      adElement.element('Survey', survey.url, attributes);
+      adElement.element('Survey', attributes).cdata(survey.url);
     });
+    if (ad.Error) {
+        adElement.element('Error').cdata(ad.Error.url);
+    }
     ad.impressions.forEach(this.addInLineImpression.bind(this, adElement, track));
     var creatives = adElement.element('Creatives');
     
